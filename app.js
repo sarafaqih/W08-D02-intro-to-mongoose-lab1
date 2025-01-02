@@ -10,7 +10,7 @@ const username = prompt('What is your name? ');
 
 console.log(`Welcome ${username}`);
 
-const userAction = prompt('What action you would like to take? (1. Create, 2. View, 3. Update, 4. Delete, 5. Quit)');
+let userAction
 
 
 async function CreateCustomer(customerName, customerAge){
@@ -57,22 +57,25 @@ async function deleteCustomer(){
 const connect = async () => {
     // Connect to MongoDB using the MONGODB_URI specified in our .env file.
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB');
+    //console.log('Connected to MongoDB');
   
     // Call the runQueries function, which will eventually hold functions to work
     // with data in our db.
+
     await runQueries()
-  
     // Disconnect our app from MongoDB after our queries run.
-    await mongoose.disconnect();
-    console.log('Exisiting ...');
-    // Close our app, bringing us back to the command line.
-    process.exit();
+        // await mongoose.disconnect();
+        // console.log('Exisiting ...');
+        // Close our app, bringing us back to the command line.
+        // process.exit();
   };
   
   // queries.js
   const runQueries = async () => {
-      console.log('Queries running.');
+      //console.log('Queries running.');
+      while(userAction !== '5'){
+        userAction = prompt('What action you would like to take? (1. Create, 2. View, 3. Update, 4. Delete, 5. Quit)');
+
       if(userAction === '1'){
         console.log(`${username} would like to Create`);
     
@@ -80,6 +83,7 @@ const connect = async () => {
         const customerAge = prompt('What is the customer age?');
     
        await CreateCustomer(customerName, customerAge)
+       
     
     }
     else if(userAction === '2'){
@@ -94,15 +98,21 @@ const connect = async () => {
         console.log(`${username} would like to Delete`);
         await deleteCustomer()
     }
-    else if(userAction === '5'){
-        //quit=true
-        console.log(`${username} would like to Quit`);
-        mongoose.connection.close()
-        console.log('Exisiting ... ')
-    }
+    // else if(userAction === '5'){
+    //     //quit=true
+    //     console.log(`${username} would like to Quit`);
+    //     mongoose.connection.close()
+    //     console.log('Exisiting ... ')
+    // }
     else {
         console.log(`Dear ${username}, please enter a valid action number!`); 
     }
+}
+    console.log(`${username} would like to Quit`);
+    mongoose.connection.close()
+    console.log('Exisiting ... ')
+
+
   };
       // The functions calls to run queries in our db will go here as we write them.
   
