@@ -1,4 +1,4 @@
-const customer = require('./models/cutstomer.js');
+const customer = require('./models/customer.js');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -12,27 +12,47 @@ console.log(`Welcome ${username}`);
 
 const userAction = prompt('What action you would like to take? (1. Create, 2. View, 3. Update, 4. Delete, 5. Quit)');
 
-let quit=false
 
-if(userAction === '1'){
-    console.log(`${username} would like to Create`);
+async function CreateCustomer(customerName, customerAge){
+    const customerData = {
+        name: customerName,
+        age: customerAge
+    }
+    const newCustomer = await customer.create(customerData)
+    console.log("New Customer", newCustomer)
 }
-else if(userAction === '2'){
-    console.log(`${username} would like to View`);
+
+async function getAllCustomers(){
+    const customers = await customer.find({})
+    console.log("Customers:", customers)
 }
-else if(userAction === '3'){
-    console.log(`${username} would like to Update`);
+
+async function updateCustomer(){
+    const customers = await customer.find({}, {id: 1, name:1, age:1})
+    console.log("Below is a list of customers: ")
+    console.log(customers)
+    const customerid = prompt('Copy and paste the id of the customer you would like to update here: ');
+    const updatedCustomerName = prompt('What is the customers new name?');
+    const updatedCustomerAge = prompt('What is the customers new age?');
+
+    const updatedCustomer = await customer.findByIdAndUpdate(customerid, {name:updatedCustomerName, age: updatedCustomerAge})
+    console.log("Updated Customer", updatedCustomer)
+
 }
-else if(userAction === '4'){
-    console.log(`${username} would like to Delete`);
+
+async function deleteCustomer(){
+    const customers = await customer.find({}, {id: 1, name:1, age:1})
+    console.log("Below is a list of customers: ")
+    console.log(customers)
+    const customerid = prompt('Copy and paste the id of the customer you would like to delete here: ');
+
+    const deletedCustomer = await customer.findByIdAndDelete(customerid)
+    console.log("Deleted Customer", deletedCustomer)
+
 }
-else if(userAction === '5'){
-    quit=true
-    console.log(`${username} would like to Quit`);
-}
-else {
-    console.log(`Dear ${username}, please enter a valid action number!`); 
-}
+
+
+
 
 const connect = async () => {
     // Connect to MongoDB using the MONGODB_URI specified in our .env file.
@@ -44,10 +64,8 @@ const connect = async () => {
     await runQueries()
   
     // Disconnect our app from MongoDB after our queries run.
-    if(quit===true){
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
-  }
+    console.log('Exisiting ...');
     // Close our app, bringing us back to the command line.
     process.exit();
   };
@@ -55,16 +73,37 @@ const connect = async () => {
   // queries.js
   const runQueries = async () => {
       console.log('Queries running.');
-      //await createTodo();
-      //await getAllToDos()
-      //await getToDoById()
-      //await findOneToDo()
-      //await UpdateOneToDoByID()
-      // await UpdateOneToDo()
-      // await UpdateManyToDo()
-      // await deleteOneToDo()
-      //await deleteToDoByID()
-    };
+      if(userAction === '1'){
+        console.log(`${username} would like to Create`);
+    
+        const customerName = prompt('What is the customer name?');
+        const customerAge = prompt('What is the customer age?');
+    
+       await CreateCustomer(customerName, customerAge)
+    
+    }
+    else if(userAction === '2'){
+        console.log(`${username} would like to View`);
+        await getAllCustomers()    
+    }
+    else if(userAction === '3'){
+        console.log(`${username} would like to Update`);
+        await updateCustomer()
+    }
+    else if(userAction === '4'){
+        console.log(`${username} would like to Delete`);
+        await deleteCustomer()
+    }
+    else if(userAction === '5'){
+        //quit=true
+        console.log(`${username} would like to Quit`);
+        mongoose.connection.close()
+        console.log('Exisiting ... ')
+    }
+    else {
+        console.log(`Dear ${username}, please enter a valid action number!`); 
+    }
+  };
       // The functions calls to run queries in our db will go here as we write them.
   
   connect()
